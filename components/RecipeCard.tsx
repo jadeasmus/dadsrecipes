@@ -1,6 +1,6 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { Recipe } from '@/types/recipe';
+import Image from "next/image";
+import Link from "next/link";
+import { Recipe } from "@/types/recipe";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -12,7 +12,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
       href={`/recipe/${recipe.id}`}
       className="group relative block h-full w-full overflow-hidden rounded-lg bg-white shadow-sm transition-shadow hover:shadow-md dark:bg-zinc-900"
     >
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+      <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
         {recipe.image_url ? (
           <Image
             src={recipe.image_url}
@@ -52,4 +52,3 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
     </Link>
   );
 }
-

@@ -37,9 +37,15 @@ export function ImageUpload({
     currentImageUrl || null
   );
 
-  const processImageFile = async (file: File, skipUpload: boolean = false) => {
+  const processImageFile = async (
+    file: File,
+    skipUpload: boolean = false,
+    localPath: string | null = null
+  ) => {
     setError(null);
-    setPreviewUrl(URL.createObjectURL(file));
+    // For test images with local paths, use the local path for preview
+    // Otherwise, use blob URL for regular uploads
+    setPreviewUrl(localPath || URL.createObjectURL(file));
 
     let uploadedImageUrl: string | null = null;
 
@@ -77,6 +83,10 @@ export function ImageUpload({
       } finally {
         setIsUploading(false);
       }
+    } else if (localPath) {
+      // For test images, use the local path and notify parent
+      uploadedImageUrl = localPath;
+      onImageUploaded(localPath);
     }
 
     // If onRecipeParsed is provided, try to parse the recipe from the image
@@ -97,7 +107,7 @@ export function ImageUpload({
         }
 
         const recipeData = await response.json();
-        // Include the uploaded image URL in the parsed recipe data (null for test images)
+        // Include the image URL in the parsed recipe data (local path for test images, uploaded URL for regular uploads)
         onRecipeParsed({
           ...recipeData,
           image_url: uploadedImageUrl,
@@ -134,8 +144,11 @@ export function ImageUpload({
       // Convert blob to File object
       const file = new File([blob], imageName, { type: blob.type });
 
-      // Process it directly (skip Supabase upload, send directly to API)
-      await processImageFile(file, true);
+      // Local path for test images (files in public/test_recipes/ are served at /test_recipes/)
+      const localPath = `/test_recipes/${imageName}`;
+
+      // Process it directly (skip Supabase upload, send directly to API, use local path)
+      await processImageFile(file, true, localPath);
     } catch (err) {
       console.error("Error loading test image:", err);
       setError("Failed to load test image");
