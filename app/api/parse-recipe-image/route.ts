@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
+import { z } from "zod";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -26,11 +26,11 @@ const RecipeSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const imageFile = formData.get('image') as File;
+    const imageFile = formData.get("image") as File;
 
     if (!imageFile) {
       return NextResponse.json(
-        { error: 'No image file provided' },
+        { error: "No image file provided" },
         { status: 400 }
       );
     }
@@ -38,14 +38,14 @@ export async function POST(request: NextRequest) {
     // Convert File to base64
     const arrayBuffer = await imageFile.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const base64Image = buffer.toString('base64');
+    const base64Image = buffer.toString("base64");
     const dataUrl = `data:${imageFile.type};base64,${base64Image}`;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: "gpt-4o",
       messages: [
         {
-          role: 'system',
+          role: "system",
           content: `You are a recipe extraction assistant. Extract recipe information from the provided image of a written recipe and return it as JSON. 
 The JSON should have the following structure:
 {
@@ -63,14 +63,14 @@ The JSON should have the following structure:
 Read the image carefully and extract all recipe information. For time_estimation, convert to minutes if needed.`,
         },
         {
-          role: 'user',
+          role: "user",
           content: [
             {
-              type: 'text',
-              text: 'Extract the recipe information from this image and return it as JSON.',
+              type: "text",
+              text: "Extract the recipe information from this image and return it as JSON.",
             },
             {
-              type: 'image_url',
+              type: "image_url",
               image_url: {
                 url: dataUrl,
               },
@@ -85,7 +85,7 @@ Read the image carefully and extract all recipe information. For time_estimation
     const content = response.choices[0]?.message?.content;
     if (!content) {
       return NextResponse.json(
-        { error: 'No response from AI' },
+        { error: "No response from AI" },
         { status: 500 }
       );
     }
@@ -102,17 +102,16 @@ Read the image carefully and extract all recipe information. For time_estimation
 
     return NextResponse.json(validated);
   } catch (error) {
-    console.error('Recipe image parsing error:', error);
+    console.error("Recipe image parsing error:", error);
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid recipe format', details: error.errors },
+        { error: "Invalid recipe format", details: error.message },
         { status: 400 }
       );
     }
     return NextResponse.json(
-      { error: 'Failed to parse recipe from image' },
+      { error: "Failed to parse recipe from image" },
       { status: 500 }
     );
   }
 }
-
