@@ -37,48 +37,51 @@ export function ImageUpload({
     currentImageUrl || null
   );
 
-  const processImageFile = async (file: File) => {
+  const processImageFile = async (file: File, skipUpload: boolean = false) => {
     setError(null);
     setPreviewUrl(URL.createObjectURL(file));
 
-    // Upload to Supabase Storage first
-    setIsUploading(true);
     let uploadedImageUrl: string | null = null;
 
-    try {
-      const supabase = createClient();
+    // Upload to Supabase Storage (skip for test images)
+    if (!skipUpload) {
+      setIsUploading(true);
+      try {
+        const supabase = createClient();
 
-      // Generate unique filename
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `recipe-images/${fileName}`;
+        // Generate unique filename
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `recipe-images/${fileName}`;
 
-      // Upload file
-      const { error: uploadError } = await supabase.storage
-        .from("recipe-images")
-        .upload(filePath, file);
+        // Upload file
+        const { error: uploadError } = await supabase.storage
+          .from("recipe-images")
+          .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+        if (uploadError) throw uploadError;
 
-      // Get public URL
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("recipe-images").getPublicUrl(filePath);
+        // Get public URL
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("recipe-images").getPublicUrl(filePath);
 
-      uploadedImageUrl = publicUrl;
-      onImageUploaded(publicUrl);
-    } catch (err) {
-      console.error("Error uploading image:", err);
-      setError("Failed to upload image");
-      setPreviewUrl(null);
-      setIsUploading(false);
-      return;
-    } finally {
-      setIsUploading(false);
+        uploadedImageUrl = publicUrl;
+        onImageUploaded(publicUrl);
+      } catch (err) {
+        console.error("Error uploading image:", err);
+        setError("Failed to upload image");
+        setPreviewUrl(null);
+        setIsUploading(false);
+        return;
+      } finally {
+        setIsUploading(false);
+      }
     }
 
     // If onRecipeParsed is provided, try to parse the recipe from the image
-    if (onRecipeParsed && uploadedImageUrl) {
+    // For test images, we can parse directly without requiring an uploaded URL
+    if (onRecipeParsed) {
       setIsParsing(true);
       try {
         const formData = new FormData();
@@ -94,7 +97,7 @@ export function ImageUpload({
         }
 
         const recipeData = await response.json();
-        // Include the uploaded image URL in the parsed recipe data
+        // Include the uploaded image URL in the parsed recipe data (null for test images)
         onRecipeParsed({
           ...recipeData,
           image_url: uploadedImageUrl,
@@ -102,7 +105,9 @@ export function ImageUpload({
       } catch (err) {
         console.error("Error parsing recipe from image:", err);
         setError(
-          "Failed to parse recipe from image. Image uploaded successfully."
+          skipUpload
+            ? "Failed to parse recipe from image"
+            : "Failed to parse recipe from image. Image uploaded successfully."
         );
       } finally {
         setIsParsing(false);
@@ -129,8 +134,8 @@ export function ImageUpload({
       // Convert blob to File object
       const file = new File([blob], imageName, { type: blob.type });
 
-      // Process it like a regular upload
-      await processImageFile(file);
+      // Process it directly (skip Supabase upload, send directly to API)
+      await processImageFile(file, true);
     } catch (err) {
       console.error("Error loading test image:", err);
       setError("Failed to load test image");

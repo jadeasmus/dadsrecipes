@@ -67,7 +67,7 @@ Read the image carefully and extract all recipe information. For time_estimation
           content: [
             {
               type: "text",
-              text: "Extract the recipe information from this image and return it as JSON.",
+              text: "Extract the recipe information from this image and return it as JSON. If the required information is not present, use common sense to make a reasonable guess. Don't leave any fields blank.",
             },
             {
               type: "image_url",
