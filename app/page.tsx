@@ -15,15 +15,15 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
+    <div className="min-h-screen bg-background text-foreground">
       <main className="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold text-zinc-900 sm:text-3xl dark:text-zinc-50">
+          <h1 className="text-2xl font-bold sm:text-3xl">
             Recipes
           </h1>
           <Link
             href="/recipe/new"
-            className="flex h-11 w-full items-center justify-center rounded-full bg-zinc-900 px-6 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 sm:w-auto sm:min-w-[120px]"
+            className="flex h-11 w-full items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:w-auto sm:min-w-[120px]"
           >
             + Create Recipe
           </Link>

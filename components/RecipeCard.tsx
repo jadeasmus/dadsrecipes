@@ -10,9 +10,9 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
   return (
     <Link
       href={`/recipe/${recipe.id}`}
-      className="group relative block h-full w-full overflow-hidden rounded-lg bg-white shadow-sm transition-shadow hover:shadow-md dark:bg-zinc-900"
+      className="group relative block h-full w-full overflow-hidden rounded-lg bg-card shadow-sm transition-shadow hover:shadow-md"
     >
-      <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+      <div className="relative aspect-4/3 w-full overflow-hidden bg-muted">
         {recipe.image_url ? (
           <Image
             src={recipe.image_url}
@@ -22,7 +22,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-zinc-400 dark:text-zinc-600">
+          <div className="flex h-full items-center justify-center text-muted-foreground">
             <svg
               className="h-12 w-12"
               fill="none"
@@ -40,11 +40,11 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         )}
       </div>
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+        <h3 className="text-lg font-semibold">
           {recipe.name}
         </h3>
         {recipe.time_estimation && (
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             {recipe.time_estimation} min
           </p>
         )}

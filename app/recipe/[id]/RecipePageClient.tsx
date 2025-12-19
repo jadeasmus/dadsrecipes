@@ -26,12 +26,12 @@ export function RecipePageClient({ recipe }: RecipePageClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
+    <div className="min-h-screen bg-background text-foreground">
       <main className="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <Link
             href="/"
-            className="mb-6 inline-flex items-center text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+            className="mb-6 inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <svg
               className="mr-2 h-4 w-4"
@@ -53,7 +53,7 @@ export function RecipePageClient({ recipe }: RecipePageClientProps) {
           <div className="mb-8 flex flex-col gap-3 sm:flex-row">
             <button
               onClick={() => setIsLetsCookMode(true)}
-              className="flex h-11 flex-1 items-center justify-center rounded-full bg-zinc-900 px-6 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className="flex h-11 flex-1 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Let's Cook!
             </button>
@@ -65,4 +65,3 @@ export function RecipePageClient({ recipe }: RecipePageClientProps) {
     </div>
   );
 }
-

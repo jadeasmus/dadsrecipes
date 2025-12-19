@@ -46,13 +46,13 @@ export function DynamicInstructionList({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-base font-medium text-zinc-900 dark:text-zinc-50">
+        <label className="text-base font-medium">
           Instructions
         </label>
         <button
           type="button"
           onClick={addInstruction}
-          className="text-sm text-zinc-600 underline hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+          className="text-sm text-muted-foreground underline transition-colors hover:text-foreground"
         >
           + Add step
         </button>
@@ -64,7 +64,7 @@ export function DynamicInstructionList({
               type="button"
               onClick={() => moveUp(index)}
               disabled={index === 0}
-              className="flex h-5 w-8 items-center justify-center rounded text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+              className="flex h-5 w-8 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <svg
                 className="h-4 w-4"
@@ -84,7 +84,7 @@ export function DynamicInstructionList({
               type="button"
               onClick={() => moveDown(index)}
               disabled={index === instructions.length - 1}
-              className="flex h-5 w-8 items-center justify-center rounded text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+              className="flex h-5 w-8 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <svg
                 className="h-4 w-4"
@@ -102,7 +102,7 @@ export function DynamicInstructionList({
             </button>
           </div>
           <div className="flex flex-1 items-center gap-2">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-sm font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary/20 text-sm font-semibold text-secondary">
               {index + 1}
             </span>
             <textarea
@@ -110,12 +110,12 @@ export function DynamicInstructionList({
               value={item.instruction}
               onChange={(e) => updateInstruction(index, e.target.value)}
               rows={2}
-              className="flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+              className="flex-1 rounded-lg border border-input bg-card px-3 py-2 text-sm text-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <button
               type="button"
               onClick={() => removeInstruction(index)}
-              className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+              className="flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               <svg
                 className="h-5 w-5"
@@ -138,7 +138,7 @@ export function DynamicInstructionList({
         <button
           type="button"
           onClick={addInstruction}
-          className="w-full rounded-lg border-2 border-dashed border-zinc-300 py-4 text-sm text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-50"
+          className="w-full rounded-lg border-2 border-dashed border-border py-4 text-sm text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
         >
           + Add first step
         </button>
@@ -146,4 +146,3 @@ export function DynamicInstructionList({
     </div>
   );
 }
-

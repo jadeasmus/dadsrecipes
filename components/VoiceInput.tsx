@@ -100,7 +100,7 @@ export function VoiceInput({ onTranscriptionComplete }: VoiceInputProps) {
   return (
     <div className="space-y-3">
       {error && (
-        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-800 dark:bg-red-900/20 dark:text-red-400">
+        <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
           {error}
         </div>
       )}
@@ -110,7 +110,7 @@ export function VoiceInput({ onTranscriptionComplete }: VoiceInputProps) {
           <button
             type="button"
             onClick={startRecording}
-            className="flex h-11 items-center justify-center gap-2 rounded-full bg-blue-600 px-6 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            className="flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <svg
               className="h-5 w-5"
@@ -133,15 +133,15 @@ export function VoiceInput({ onTranscriptionComplete }: VoiceInputProps) {
           <button
             type="button"
             onClick={stopRecording}
-            className="flex h-11 items-center justify-center gap-2 rounded-full bg-red-600 px-6 text-sm font-medium text-white transition-colors hover:bg-red-700"
+            className="flex h-11 items-center justify-center gap-2 rounded-full bg-destructive px-6 text-sm font-medium text-background transition-colors hover:bg-destructive/80"
           >
-            <div className="h-3 w-3 rounded-full bg-white animate-pulse" />
+            <div className="h-3 w-3 rounded-full bg-background animate-pulse" />
             Stop Recording
           </button>
         )}
 
         {isProcessing && (
-          <div className="flex h-11 items-center justify-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+          <div className="flex h-11 items-center justify-center gap-2 text-sm text-muted-foreground">
             <svg
               className="h-5 w-5 animate-spin"
               fill="none"
@@ -166,10 +166,9 @@ export function VoiceInput({ onTranscriptionComplete }: VoiceInputProps) {
         )}
       </div>
 
-      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="text-xs text-muted-foreground">
         Click to record your recipe. Speak clearly and include ingredients and instructions.
       </p>
     </div>
   );
 }
-

@@ -123,23 +123,23 @@ export default function NewRecipePage() {
     } catch (err) {
       console.error("Error creating recipe:", err);
       setError(err instanceof Error ? err.message : "Failed to create recipe");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
-  return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <main className="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <div className="mx-auto max-w-2xl">
-          <Link
-            href="/"
-            className="mb-6 inline-flex items-center text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
-          >
-            <svg
-              className="mr-2 h-4 w-4"
-              fill="none"
-              stroke="currentColor"
+return (
+  <div className="min-h-screen bg-background text-foreground">
+    <main className="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mx-auto max-w-2xl">
+        <Link
+          href="/"
+          className="mb-6 inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <svg
+            className="mr-2 h-4 w-4"
+            fill="none"
+            stroke="currentColor"
               viewBox="0 0 24 24"
             >
               <path
@@ -148,38 +148,38 @@ export default function NewRecipePage() {
                 strokeWidth={2}
                 d="M15 19l-7-7 7-7"
               />
-            </svg>
-            Back to Recipes
-          </Link>
-          <h1 className="mb-6 text-2xl font-bold text-zinc-900 sm:mb-8 sm:text-3xl dark:text-zinc-50">
-            Create New Recipe
-          </h1>
+          </svg>
+          Back to Recipes
+        </Link>
+        <h1 className="mb-6 text-2xl font-bold sm:mb-8 sm:text-3xl">
+          Create New Recipe
+        </h1>
 
-          {error && (
-            <div className="mb-6 rounded-lg bg-red-50 p-4 text-sm text-red-800 dark:bg-red-900/20 dark:text-red-400">
-              {error}
-            </div>
-          )}
+        {error && (
+          <div className="mb-6 rounded-lg bg-destructive/10 p-4 text-sm text-destructive">
+            {error}
+          </div>
+        )}
 
           {!parsedRecipe ? (
             // Input methods - show before recipe is parsed
             <div className="space-y-6">
-              <div className="space-y-4 rounded-lg bg-white p-6 shadow-sm dark:bg-zinc-900">
-                <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+              <div className="space-y-4 rounded-lg bg-card p-6 shadow-sm">
+                <h2 className="text-xl font-semibold">
                   Record Voice Recipe
                 </h2>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                <p className="text-sm text-muted-foreground">
                   Speak your recipe clearly, including ingredients and
                   instructions.
                 </p>
                 <VoiceInput onTranscriptionComplete={handleRecipeParsed} />
               </div>
 
-              <div className="space-y-4 rounded-lg bg-white p-6 shadow-sm dark:bg-zinc-900">
-                <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+              <div className="space-y-4 rounded-lg bg-card p-6 shadow-sm">
+                <h2 className="text-xl font-semibold">
                   Upload Recipe Photo
                 </h2>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                <p className="text-sm text-muted-foreground">
                   Take a photo of a written recipe to automatically extract the
                   information.
                 </p>
@@ -192,15 +192,15 @@ export default function NewRecipePage() {
           ) : (
             // Review parsed recipe
             <div className="space-y-6">
-              <div className="space-y-4 rounded-lg bg-white p-6 shadow-sm dark:bg-zinc-900">
+              <div className="space-y-4 rounded-lg bg-card p-6 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+                  <h2 className="text-xl font-semibold">
                     Review Recipe
                   </h2>
                   <button
                     type="button"
                     onClick={() => setParsedRecipe(null)}
-                    className="text-sm text-zinc-600 underline hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+                    className="text-sm text-muted-foreground underline transition-colors hover:text-foreground"
                   >
                     Start Over
                   </button>
@@ -208,7 +208,7 @@ export default function NewRecipePage() {
 
                 {/* Recipe Name - editable */}
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                  <label className="mb-2 block text-sm font-medium">
                     Recipe Name
                   </label>
                   <input
@@ -217,18 +217,18 @@ export default function NewRecipePage() {
                     onChange={(e) =>
                       setParsedRecipe({ ...parsedRecipe, name: e.target.value })
                     }
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
+                    className="w-full rounded-lg border border-input bg-card px-3 py-2 text-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
 
                 {/* Recipe Preview */}
-                <div className="space-y-4 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950">
+                <div className="space-y-4 rounded-lg border border-border/50 bg-muted p-4">
                   {parsedRecipe.description && (
                     <div>
-                      <h3 className="mb-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                      <h3 className="mb-1 text-sm font-medium text-foreground">
                         Description
                       </h3>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      <p className="text-sm text-muted-foreground">
                         {parsedRecipe.description}
                       </p>
                     </div>
@@ -236,22 +236,22 @@ export default function NewRecipePage() {
 
                   <div className="flex flex-wrap gap-2">
                     {parsedRecipe.cuisine_type && (
-                      <span className="rounded-full bg-zinc-200 px-3 py-1 text-sm text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                      <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
                         {parsedRecipe.cuisine_type}
                       </span>
                     )}
                     {parsedRecipe.main_ingredient && (
-                      <span className="rounded-full bg-zinc-200 px-3 py-1 text-sm text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                      <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
                         {parsedRecipe.main_ingredient}
                       </span>
                     )}
                     {parsedRecipe.time_estimation > 0 && (
-                      <span className="rounded-full bg-zinc-200 px-3 py-1 text-sm text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                      <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
                         {parsedRecipe.time_estimation} min
                       </span>
                     )}
                     {parsedRecipe.servings && (
-                      <span className="rounded-full bg-zinc-200 px-3 py-1 text-sm text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                      <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
                         {parsedRecipe.servings} servings
                       </span>
                     )}
@@ -259,14 +259,14 @@ export default function NewRecipePage() {
 
                   {parsedRecipe.ingredients.length > 0 && (
                     <div>
-                      <h3 className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                      <h3 className="mb-2 text-sm font-medium text-foreground">
                         Ingredients ({parsedRecipe.ingredients.length})
                       </h3>
                       <ul className="space-y-1">
                         {parsedRecipe.ingredients.map((ing, index) => (
                           <li
                             key={index}
-                            className="text-sm text-zinc-600 dark:text-zinc-400"
+                            className="text-sm text-muted-foreground"
                           >
                             {ing.amount && (
                               <span className="font-medium">{ing.amount} </span>
@@ -280,16 +280,16 @@ export default function NewRecipePage() {
 
                   {parsedRecipe.instructions.length > 0 && (
                     <div>
-                      <h3 className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                      <h3 className="mb-2 text-sm font-medium text-foreground">
                         Instructions ({parsedRecipe.instructions.length} steps)
                       </h3>
                       <ol className="space-y-2">
                         {parsedRecipe.instructions.map((inst, index) => (
                           <li
                             key={index}
-                            className="flex gap-3 text-sm text-zinc-600 dark:text-zinc-400"
+                            className="flex gap-3 text-sm text-muted-foreground"
                           >
-                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-300 text-xs font-semibold text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300">
+                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                               {index + 1}
                             </span>
                             <span className="flex-1">{inst.instruction}</span>
@@ -303,7 +303,7 @@ export default function NewRecipePage() {
                 {/* Image upload for recipe image (if not already uploaded) */}
                 {!imageUrl && !parsedRecipe.image_url && (
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                    <label className="mb-2 block text-sm font-medium">
                       Recipe Image (optional)
                     </label>
                     <ImageUpload
@@ -321,7 +321,7 @@ export default function NewRecipePage() {
                   <button
                     type="button"
                     onClick={() => router.back()}
-                    className="flex h-11 flex-1 items-center justify-center rounded-full border border-zinc-300 px-6 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    className="flex h-11 flex-1 items-center justify-center rounded-full border border-border px-6 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                   >
                     Cancel
                   </button>
@@ -329,7 +329,7 @@ export default function NewRecipePage() {
                     type="button"
                     onClick={handleSubmit}
                     disabled={isSubmitting || !parsedRecipe.name.trim()}
-                    className="flex h-11 flex-1 items-center justify-center rounded-full bg-zinc-900 px-6 text-sm font-medium text-white transition-colors disabled:opacity-50 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                    className="flex h-11 flex-1 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors disabled:opacity-50 hover:bg-primary/90"
                   >
                     {isSubmitting ? "Creating..." : "Create Recipe"}
                   </button>

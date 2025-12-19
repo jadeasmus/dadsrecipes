@@ -158,7 +158,7 @@ export function ImageUpload({
   return (
     <div className="space-y-3">
       {previewUrl && (
-        <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+        <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
           <img
             src={previewUrl}
             alt="Preview"
@@ -168,15 +168,15 @@ export function ImageUpload({
       )}
 
       {error && (
-        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-800 dark:bg-red-900/20 dark:text-red-400">
+        <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
           {error}
         </div>
       )}
 
       <div className="space-y-3">
         {isDevMode && (
-          <div className="rounded-lg border-2 border-dashed border-amber-300 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-900/20">
-            <label className="mb-2 block text-xs font-medium text-amber-900 dark:text-amber-200">
+          <div className="rounded-lg border-2 border-dashed border-primary/50 bg-primary/5 p-3">
+            <label className="mb-2 block text-xs font-medium text-primary">
               🧪 Dev Mode: Test Images
             </label>
             <select
@@ -187,7 +187,7 @@ export function ImageUpload({
                 }
               }}
               disabled={isUploading || isParsing}
-              className="w-full rounded-lg border border-amber-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-amber-700 dark:bg-zinc-800 dark:text-zinc-50"
+              className="w-full rounded-lg border border-primary/50 bg-card px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
             >
               <option value="">Select a test image...</option>
               {TEST_IMAGES.map((img) => (
@@ -200,7 +200,7 @@ export function ImageUpload({
         )}
 
         <div className="flex items-center gap-3">
-          <label className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-full border border-zinc-300 bg-white px-6 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+          <label className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-full border border-border bg-card px-6 text-sm font-medium text-foreground transition-colors hover:bg-muted">
             <svg
               className="h-5 w-5"
               fill="none"
@@ -226,7 +226,7 @@ export function ImageUpload({
           </label>
 
           {(isUploading || isParsing) && (
-            <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <svg
                 className="h-5 w-5 animate-spin"
                 fill="none"
@@ -253,7 +253,7 @@ export function ImageUpload({
       </div>
 
       {onRecipeParsed && (
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="text-xs text-muted-foreground">
           Upload a photo of a written recipe to automatically extract recipe
           information.
         </p>

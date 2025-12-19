@@ -9,7 +9,7 @@ export function RecipeGrid({ recipes }: RecipeGridProps) {
   if (recipes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="text-lg text-zinc-600 dark:text-zinc-400">
+        <p className="text-lg text-muted-foreground">
           No recipes yet. Create your first recipe!
         </p>
       </div>
@@ -24,4 +24,3 @@ export function RecipeGrid({ recipes }: RecipeGridProps) {
     </div>
   );
 }
-
