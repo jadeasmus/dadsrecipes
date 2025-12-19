@@ -52,10 +52,38 @@ export default async function Home() {
                 />
               </div>
             </div>
+            {/* Discover Recipes Button */}
+            <Link
+              href="#recipes"
+              className="mt-8 inline-flex items-center gap-2 rounded-lg bg-[#FFD700] px-6 py-3 text-base font-medium text-black transition-transform hover:scale-105 sm:px-8 sm:py-4 sm:text-lg"
+              style={{
+                boxShadow: "4px 4px 0px 0px rgba(0, 0, 0, 1)",
+              }}
+            >
+              <span>Discover recipes</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-arrow-right"
+              >
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </Link>
           </div>
         </section>
 
-        <div className="mb-10 flex flex-col gap-3 sm:mb-12 sm:flex-row sm:items-center sm:justify-between">
+        <div
+          id="recipes"
+          className="mb-10 flex flex-col gap-3 sm:mb-12 sm:flex-row sm:items-center sm:justify-between"
+        >
           <h1 className="text-2xl font-bold sm:text-3xl">Recipes</h1>
           <Link
             href="/recipe/new"
