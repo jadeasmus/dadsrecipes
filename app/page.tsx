@@ -52,31 +52,6 @@ export default async function Home() {
                 />
               </div>
             </div>
-            {/* Discover Recipes Button */}
-            <Link
-              href="#recipes"
-              className="mt-8 inline-flex items-center gap-2 rounded-lg bg-[#FFD700] px-6 py-3 text-base font-medium text-black transition-transform hover:scale-105 sm:px-8 sm:py-4 sm:text-lg"
-              style={{
-                boxShadow: "4px 4px 0px 0px rgba(0, 0, 0, 1)",
-              }}
-            >
-              <span>Discover recipes</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-arrow-right"
-              >
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
-              </svg>
-            </Link>
           </div>
         </section>
 
@@ -87,12 +62,16 @@ export default async function Home() {
           <h1 className="text-2xl font-bold sm:text-3xl">Recipes</h1>
           <Link
             href="/recipe/new"
-            className="flex h-11 w-full items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:w-auto sm:min-w-[140px]"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-transform hover:scale-105 sm:px-8 sm:py-4 sm:text-lg"
+            style={{
+              boxShadow: "4px 4px 0px 0px rgba(0, 0, 0, 1)",
+            }}
           >
+            <span>Add a Recipe</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -105,7 +84,6 @@ export default async function Home() {
               <path d="M8 12h8" />
               <path d="M12 8v8" />
             </svg>
-            <span className="ml-2 text-lg">Add a Recipe</span>
           </Link>
         </div>
         <RecipeGrid recipes={(recipes as Recipe[]) || []} />
