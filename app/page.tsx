@@ -62,12 +62,12 @@ export default async function Home() {
           {/* <h1 className="text-2xl font-bold sm:text-3xl">Recipes</h1> */}
           <Link
             href="/recipe/new"
-            className="inline-flex  items-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-transform hover:scale-105 sm:px-8 sm:py-4 sm:text-lg"
+            className="inline-flex justify-center items-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-transform hover:scale-105 sm:px-8 sm:py-4 sm:text-lg "
             style={{
               boxShadow: "4px 4px 0px 0px rgba(0, 0, 0, 1)",
             }}
           >
-            <span className="">Add a Recipe</span>
+            <span className="text-xl">Add a Recipe</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
