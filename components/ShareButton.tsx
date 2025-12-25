@@ -11,8 +11,28 @@ export function ShareButton({ recipeUrl }: ShareButtonProps) {
 
   const handleShare = async () => {
     try {
+      // Ensure we're in a browser environment
+      if (typeof window === 'undefined') {
+        return;
+      }
+      
       const fullUrl = `${window.location.origin}${recipeUrl}`;
-      await navigator.clipboard.writeText(fullUrl);
+      
+      // Check if clipboard API is available
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(fullUrl);
+      } else {
+        // Fallback for browsers that don't support clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = fullUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2000);
     } catch (err) {

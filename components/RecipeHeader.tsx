@@ -1,11 +1,13 @@
-import Image from 'next/image';
-import { Recipe } from '@/types/recipe';
+import Image from "next/image";
+import { Recipe } from "@/types/recipe";
+import { ShareButton } from "@/components/ShareButton";
 
 interface RecipeHeaderProps {
   recipe: Recipe;
+  recipeUrl?: string;
 }
 
-export function RecipeHeader({ recipe }: RecipeHeaderProps) {
+export function RecipeHeader({ recipe, recipeUrl }: RecipeHeaderProps) {
   return (
     <div className="mb-8">
       {recipe.image_url && (
@@ -20,9 +22,10 @@ export function RecipeHeader({ recipe }: RecipeHeaderProps) {
           />
         </div>
       )}
-      <h1 className="mb-4 text-3xl font-bold sm:text-4xl">
-        {recipe.name}
-      </h1>
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <h1 className="text-3xl font-bold sm:text-4xl">{recipe.name}</h1>
+        {recipeUrl && <ShareButton recipeUrl={recipeUrl} />}
+      </div>
       {recipe.description && (
         <p className="mb-6 text-lg text-muted-foreground">
           {recipe.description}
@@ -30,27 +33,27 @@ export function RecipeHeader({ recipe }: RecipeHeaderProps) {
       )}
       <div className="flex flex-wrap gap-3">
         {recipe.cuisine_type && (
-          <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+          <span className="rounded-full bg-secondary px-3 py-1 text-sm text-black/80">
             {recipe.cuisine_type}
           </span>
         )}
         {recipe.main_ingredient && (
-          <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+          <span className="rounded-full bg-secondary px-3 py-1 text-sm text-black/80">
             {recipe.main_ingredient}
           </span>
         )}
         {recipe.time_estimation && (
-          <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+          <span className="rounded-full bg-secondary px-3 py-1 text-sm text-black/80">
             {recipe.time_estimation} min
           </span>
         )}
         {recipe.servings && (
-          <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+          <span className="rounded-full bg-secondary px-3 py-1 text-sm text-black/80">
             {recipe.servings} servings
           </span>
         )}
         {recipe.health_score !== null && (
-          <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+          <span className="rounded-full bg-secondary px-3 py-1 text-sm text-black/80">
             Health: {recipe.health_score}/100
           </span>
         )}

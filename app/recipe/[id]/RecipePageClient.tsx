@@ -1,13 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { RecipeWithDetails } from '@/types/recipe';
-import { RecipeHeader } from '@/components/RecipeHeader';
-import { IngredientsList } from '@/components/IngredientsList';
-import { InstructionsView } from '@/components/InstructionsView';
-import { LetsCookMode } from '@/components/LetsCookMode';
-import { ShareButton } from '@/components/ShareButton';
+import { useState } from "react";
+import Link from "next/link";
+import { RecipeWithDetails } from "@/types/recipe";
+import { RecipeHeader } from "@/components/RecipeHeader";
+import { IngredientsList } from "@/components/IngredientsList";
+import { InstructionsView } from "@/components/InstructionsView";
+import { LetsCookMode } from "@/components/LetsCookMode";
 
 interface RecipePageClientProps {
   recipe: RecipeWithDetails;
@@ -48,16 +47,18 @@ export function RecipePageClient({ recipe }: RecipePageClientProps) {
             </svg>
             Back to Recipes
           </Link>
-          <RecipeHeader recipe={recipe} />
+          <RecipeHeader recipe={recipe} recipeUrl={`/recipe/${recipe.id}`} />
           <IngredientsList ingredients={recipe.ingredients} />
-          <div className="mb-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mb-8">
             <button
               onClick={() => setIsLetsCookMode(true)}
-              className="flex h-11 flex-1 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="inline-flex justify-center items-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-transform hover:scale-105 sm:px-8 sm:py-4 sm:text-lg"
+              style={{
+                boxShadow: "4px 4px 0px 0px rgba(0, 0, 0, 1)",
+              }}
             >
-              Let's Cook!
+              <span className="text-xl">Let's Cook!</span>
             </button>
-            <ShareButton recipeUrl={`/recipe/${recipe.id}`} />
           </div>
           <InstructionsView instructions={recipe.instructions} />
         </div>
