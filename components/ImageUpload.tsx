@@ -174,7 +174,7 @@ export function ImageUpload({
       )}
 
       <div className="space-y-3">
-        {isDevMode && (
+        {/* {isDevMode && (
           <div className="rounded-lg border-2 border-dashed border-primary/50 bg-primary/5 p-3">
             <label className="mb-2 block text-xs font-medium text-primary">
               🧪 Dev Mode: Test Images
@@ -197,10 +197,19 @@ export function ImageUpload({
               ))}
             </select>
           </div>
-        )}
+        )} */}
 
         <div className="flex items-center gap-3">
-          <label className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-full border border-border bg-card px-6 text-sm font-medium text-foreground transition-colors hover:bg-muted">
+          <span
+            className={`relative z-0 inline-flex before:pointer-events-none before:absolute before:inset-0 before:z-0 before:translate-x-1.5 before:translate-y-1.5 before:bg-black/35 before:content-[''] ${
+              isUploading || isParsing ? "opacity-60" : ""
+            }`}
+          >
+            <label
+              className={`relative z-10 inline-flex items-center justify-center gap-2 rounded-none border-2 border-black bg-white px-8 py-3 text-base font-semibold text-black transition-transform active:translate-x-1 active:translate-y-1 ${
+                isUploading || isParsing ? "cursor-not-allowed" : "cursor-pointer"
+              }`}
+            >
             <svg
               className="h-5 w-5"
               fill="none"
@@ -223,7 +232,8 @@ export function ImageUpload({
               className="hidden"
               disabled={isUploading || isParsing}
             />
-          </label>
+            </label>
+          </span>
 
           {(isUploading || isParsing) && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -251,13 +261,6 @@ export function ImageUpload({
           )}
         </div>
       </div>
-
-      {onRecipeParsed && (
-        <p className="text-xs text-muted-foreground">
-          Upload a photo of a written recipe to automatically extract recipe
-          information.
-        </p>
-      )}
     </div>
   );
 }

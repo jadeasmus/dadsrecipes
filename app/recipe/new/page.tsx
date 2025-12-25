@@ -123,23 +123,23 @@ export default function NewRecipePage() {
     } catch (err) {
       console.error("Error creating recipe:", err);
       setError(err instanceof Error ? err.message : "Failed to create recipe");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-return (
-  <div className="min-h-screen bg-background text-foreground">
-    <main className="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-      <div className="mx-auto max-w-2xl">
-        <Link
-          href="/"
-          className="mb-6 inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <svg
-            className="mr-2 h-4 w-4"
-            fill="none"
-            stroke="currentColor"
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <main className="container px-4 py-6 sm:px-6 sm:py-8 lg:px-8 mx-auto">
+        <div className="mx-auto max-w-2xl">
+          <Link
+            href="/"
+            className="inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground py-2 px-4 rounded-full border border-border"
+          >
+            <svg
+              className="mr-2 h-4 w-4"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
               <path
@@ -148,195 +148,190 @@ return (
                 strokeWidth={2}
                 d="M15 19l-7-7 7-7"
               />
-          </svg>
-          Back to Recipes
-        </Link>
-        <h1 className="mb-6 text-2xl font-bold sm:mb-8 sm:text-3xl">
-          Create New Recipe
-        </h1>
+            </svg>
+            Back to Recipes
+          </Link>
 
-        {error && (
-          <div className="mb-6 rounded-lg bg-destructive/10 p-4 text-sm text-destructive">
-            {error}
-          </div>
-        )}
-
-          {!parsedRecipe ? (
-            // Input methods - show before recipe is parsed
-            <div className="space-y-6">
-              <div className="space-y-4 rounded-lg bg-card p-6 shadow-sm">
-                <h2 className="text-xl font-semibold">
-                  Record Voice Recipe
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Speak your recipe clearly, including ingredients and
-                  instructions.
-                </p>
-                <VoiceInput onTranscriptionComplete={handleRecipeParsed} />
+          <div className="my-10">
+            <h1 className="mb-4 text-2xl font-bold sm:mb-8 sm:text-3xl">
+              Create New Recipe
+            </h1>
+            {error && (
+              <div className="mb-6 rounded-lg bg-destructive/10 p-4 text-sm text-destructive">
+                {error}
               </div>
-
-              <div className="space-y-4 rounded-lg bg-card p-6 shadow-sm">
-                <h2 className="text-xl font-semibold">
-                  Upload Recipe Photo
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Take a photo of a written recipe to automatically extract the
-                  information.
-                </p>
-                <ImageUpload
-                  onImageUploaded={handleImageUploaded}
-                  onRecipeParsed={handleRecipeParsed}
-                />
-              </div>
-            </div>
-          ) : (
-            // Review parsed recipe
-            <div className="space-y-6">
-              <div className="space-y-4 rounded-lg bg-card p-6 shadow-sm">
-                <div className="flex items-center justify-between">
+            )}
+            {!parsedRecipe ? (
+              // Input methods - show before recipe is parsed
+              <div className="space-y-6">
+                {/* <div className="space-y-4 rounded-lg bg-card p-6 shadow-sm">
                   <h2 className="text-xl font-semibold">
-                    Review Recipe
+                    Record Voice Recipe
                   </h2>
-                  <button
-                    type="button"
-                    onClick={() => setParsedRecipe(null)}
-                    className="text-sm text-muted-foreground underline transition-colors hover:text-foreground"
-                  >
-                    Start Over
-                  </button>
-                </div>
-
-                {/* Recipe Name - editable */}
-                <div>
-                  <label className="mb-2 block text-sm font-medium">
-                    Recipe Name
-                  </label>
-                  <input
-                    type="text"
-                    value={parsedRecipe.name}
-                    onChange={(e) =>
-                      setParsedRecipe({ ...parsedRecipe, name: e.target.value })
-                    }
-                    className="w-full rounded-lg border border-input bg-card px-3 py-2 text-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
+                  <p className="text-sm text-muted-foreground">
+                    Speak your recipe clearly, including ingredients and
+                    instructions.
+                  </p>
+                  <VoiceInput onTranscriptionComplete={handleRecipeParsed} />
+                </div> */}
+                <div className="space-y-4 rounded-[0.35rem] bg-card p-6 border border-border">
+                  <h2 className="text-xl font-semibold">Upload Photo</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Take a photo of a written recipe to automatically extract
+                    the information, and then share it with your kids✨
+                  </p>
+                  <ImageUpload
+                    onImageUploaded={handleImageUploaded}
+                    onRecipeParsed={handleRecipeParsed}
                   />
                 </div>
-
-                {/* Recipe Preview */}
-                <div className="space-y-4 rounded-lg border border-border/50 bg-muted p-4">
-                  {parsedRecipe.description && (
-                    <div>
-                      <h3 className="mb-1 text-sm font-medium text-foreground">
-                        Description
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {parsedRecipe.description}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="flex flex-wrap gap-2">
-                    {parsedRecipe.cuisine_type && (
-                      <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
-                        {parsedRecipe.cuisine_type}
-                      </span>
-                    )}
-                    {parsedRecipe.main_ingredient && (
-                      <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
-                        {parsedRecipe.main_ingredient}
-                      </span>
-                    )}
-                    {parsedRecipe.time_estimation > 0 && (
-                      <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
-                        {parsedRecipe.time_estimation} min
-                      </span>
-                    )}
-                    {parsedRecipe.servings && (
-                      <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
-                        {parsedRecipe.servings} servings
-                      </span>
-                    )}
+              </div>
+            ) : (
+              // Review parsed recipe
+              <div className="space-y-6">
+                <div className="space-y-4 rounded-lg bg-card p-6 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold">Review Recipe</h2>
+                    <button
+                      type="button"
+                      onClick={() => setParsedRecipe(null)}
+                      className="text-sm text-muted-foreground underline transition-colors hover:text-foreground"
+                    >
+                      Start Over
+                    </button>
                   </div>
-
-                  {parsedRecipe.ingredients.length > 0 && (
-                    <div>
-                      <h3 className="mb-2 text-sm font-medium text-foreground">
-                        Ingredients ({parsedRecipe.ingredients.length})
-                      </h3>
-                      <ul className="space-y-1">
-                        {parsedRecipe.ingredients.map((ing, index) => (
-                          <li
-                            key={index}
-                            className="text-sm text-muted-foreground"
-                          >
-                            {ing.amount && (
-                              <span className="font-medium">{ing.amount} </span>
-                            )}
-                            {ing.name}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {parsedRecipe.instructions.length > 0 && (
-                    <div>
-                      <h3 className="mb-2 text-sm font-medium text-foreground">
-                        Instructions ({parsedRecipe.instructions.length} steps)
-                      </h3>
-                      <ol className="space-y-2">
-                        {parsedRecipe.instructions.map((inst, index) => (
-                          <li
-                            key={index}
-                            className="flex gap-3 text-sm text-muted-foreground"
-                          >
-                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-                              {index + 1}
-                            </span>
-                            <span className="flex-1">{inst.instruction}</span>
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
-                  )}
-                </div>
-
-                {/* Image upload for recipe image (if not already uploaded) */}
-                {!imageUrl && !parsedRecipe.image_url && (
+                  {/* Recipe Name - editable */}
                   <div>
                     <label className="mb-2 block text-sm font-medium">
-                      Recipe Image (optional)
+                      Recipe Name
                     </label>
-                    <ImageUpload
-                      onImageUploaded={(url) => {
-                        setImageUrl(url);
-                        setParsedRecipe({ ...parsedRecipe, image_url: url });
-                      }}
-                      // Don't parse recipe from this image upload - it's just for the recipe image
+                    <input
+                      type="text"
+                      value={parsedRecipe.name}
+                      onChange={(e) =>
+                        setParsedRecipe({
+                          ...parsedRecipe,
+                          name: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-lg border border-input bg-card px-3 py-2 text-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   </div>
-                )}
-
-                {/* Submit Button */}
-                <div className="flex gap-4">
-                  <button
-                    type="button"
-                    onClick={() => router.back()}
-                    className="flex h-11 flex-1 items-center justify-center rounded-full border border-border px-6 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={isSubmitting || !parsedRecipe.name.trim()}
-                    className="flex h-11 flex-1 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors disabled:opacity-50 hover:bg-primary/90"
-                  >
-                    {isSubmitting ? "Creating..." : "Create Recipe"}
-                  </button>
+                  {/* Recipe Preview */}
+                  <div className="space-y-4 rounded-lg border border-border/50 bg-muted p-4">
+                    {parsedRecipe.description && (
+                      <div>
+                        <h3 className="mb-1 text-sm font-medium text-foreground">
+                          Description
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {parsedRecipe.description}
+                        </p>
+                      </div>
+                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {parsedRecipe.cuisine_type && (
+                        <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+                          {parsedRecipe.cuisine_type}
+                        </span>
+                      )}
+                      {parsedRecipe.main_ingredient && (
+                        <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+                          {parsedRecipe.main_ingredient}
+                        </span>
+                      )}
+                      {parsedRecipe.time_estimation > 0 && (
+                        <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+                          {parsedRecipe.time_estimation} min
+                        </span>
+                      )}
+                      {parsedRecipe.servings && (
+                        <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+                          {parsedRecipe.servings} servings
+                        </span>
+                      )}
+                    </div>
+                    {parsedRecipe.ingredients.length > 0 && (
+                      <div>
+                        <h3 className="mb-2 text-sm font-medium text-foreground">
+                          Ingredients ({parsedRecipe.ingredients.length})
+                        </h3>
+                        <ul className="space-y-1">
+                          {parsedRecipe.ingredients.map((ing, index) => (
+                            <li
+                              key={index}
+                              className="text-sm text-muted-foreground"
+                            >
+                              {ing.amount && (
+                                <span className="font-medium">
+                                  {ing.amount}{" "}
+                                </span>
+                              )}
+                              {ing.name}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {parsedRecipe.instructions.length > 0 && (
+                      <div>
+                        <h3 className="mb-2 text-sm font-medium text-foreground">
+                          Instructions ({parsedRecipe.instructions.length}{" "}
+                          steps)
+                        </h3>
+                        <ol className="space-y-2">
+                          {parsedRecipe.instructions.map((inst, index) => (
+                            <li
+                              key={index}
+                              className="flex gap-3 text-sm text-muted-foreground"
+                            >
+                              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                                {index + 1}
+                              </span>
+                              <span className="flex-1">{inst.instruction}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+                  </div>
+                  {/* Image upload for recipe image (if not already uploaded) */}
+                  {!imageUrl && !parsedRecipe.image_url && (
+                    <div>
+                      <label className="mb-2 block text-sm font-medium">
+                        Recipe Image (optional)
+                      </label>
+                      <ImageUpload
+                        onImageUploaded={(url) => {
+                          setImageUrl(url);
+                          setParsedRecipe({ ...parsedRecipe, image_url: url });
+                        }}
+                        // Don't parse recipe from this image upload - it's just for the recipe image
+                      />
+                    </div>
+                  )}
+                  {/* Submit Button */}
+                  <div className="flex gap-4">
+                    <button
+                      type="button"
+                      onClick={() => router.back()}
+                      className="flex h-11 flex-1 items-center justify-center rounded-full border border-border px-6 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      disabled={isSubmitting || !parsedRecipe.name.trim()}
+                      className="flex h-11 flex-1 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors disabled:opacity-50 hover:bg-primary/90"
+                    >
+                      {isSubmitting ? "Creating..." : "Create Recipe"}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </main>
     </div>
