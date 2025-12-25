@@ -189,7 +189,7 @@ export default function NewRecipePage() {
             ) : (
               // Review parsed recipe
               <div className="space-y-6">
-                <div className="space-y-4 rounded-lg bg-card p-6 shadow-sm">
+                <div className="space-y-4 rounded-[0.35rem] bg-card p-6 border border-border">
                   <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold">Review Recipe</h2>
                     <button
@@ -231,22 +231,22 @@ export default function NewRecipePage() {
                     )}
                     <div className="flex flex-wrap gap-2">
                       {parsedRecipe.cuisine_type && (
-                        <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+                        <span className="rounded-full bg-secondary px-3 py-1 text-sm text-black/80">
                           {parsedRecipe.cuisine_type}
                         </span>
                       )}
                       {parsedRecipe.main_ingredient && (
-                        <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+                        <span className="rounded-full bg-secondary px-3 py-1 text-sm text-black/80">
                           {parsedRecipe.main_ingredient}
                         </span>
                       )}
                       {parsedRecipe.time_estimation > 0 && (
-                        <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+                        <span className="rounded-full bg-secondary px-3 py-1 text-sm text-black/80">
                           {parsedRecipe.time_estimation} min
                         </span>
                       )}
                       {parsedRecipe.servings && (
-                        <span className="rounded-full bg-secondary/20 px-3 py-1 text-sm text-secondary">
+                        <span className="rounded-full bg-secondary px-3 py-1 text-sm text-black/80">
                           {parsedRecipe.servings} servings
                         </span>
                       )}
