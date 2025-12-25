@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 interface ImageUploadProps {
@@ -9,258 +9,404 @@ interface ImageUploadProps {
   currentImageUrl?: string;
 }
 
-const TEST_IMAGES = [
-  { name: "handwritten.jpg", label: "Handwritten Recipe" },
-  { name: "handwritten_2.jpg", label: "Handwritten Recipe 2" },
-  { name: "handwritten_3.jpg", label: "Handwritten Recipe 3" },
-  { name: "handwritten_bad_lighting.jpg", label: "Handwritten (Bad Lighting)" },
-  { name: "blueberry_muffins.jpg", label: "Blueberry Muffins" },
-  { name: "carrot_cake.jpg", label: "Carrot Cake" },
-  { name: "minimal_notes.jpg", label: "Minimal Notes" },
-  { name: "multi_recipes.jpg", label: "Multiple Recipes" },
-  { name: "not_a_recipe.jpg", label: "Not a Recipe" },
-  { name: "bad_quality_corrections.jpg", label: "Bad Quality Corrections" },
-  { name: "tinymargins.jpg", label: "Tiny Margins" },
-];
+interface SelectedPhoto {
+  id: string;
+  file: File;
+  preview: string;
+}
 
-const isDevMode = process.env.NODE_ENV === "development";
+const MAX_PHOTOS = 5;
 
 export function ImageUpload({
   onImageUploaded,
   onRecipeParsed,
   currentImageUrl,
 }: ImageUploadProps) {
+  const [selectedPhotos, setSelectedPhotos] = useState<SelectedPhoto[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    currentImageUrl || null
-  );
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const albumInputRef = useRef<HTMLInputElement>(null);
 
-  const processImageFile = async (
-    file: File,
-    skipUpload: boolean = false,
-    localPath: string | null = null
-  ) => {
+  const handleFileSelect = async (files: FileList | null) => {
+    if (!files) return;
+
+    const newPhotos: SelectedPhoto[] = [];
+    const remainingSlots = MAX_PHOTOS - selectedPhotos.length;
+
+    Array.from(files)
+      .slice(0, remainingSlots)
+      .forEach((file) => {
+        if (file.type.startsWith("image/")) {
+          newPhotos.push({
+            id: `${Date.now()}-${Math.random()}`,
+            file,
+            preview: URL.createObjectURL(file),
+          });
+        }
+      });
+
+    if (newPhotos.length === 0) {
+      setError("Please select valid image files");
+      return;
+    }
+
+    if (selectedPhotos.length + newPhotos.length > MAX_PHOTOS) {
+      setError(`Maximum ${MAX_PHOTOS} photos allowed`);
+    }
+
+    const updatedPhotos = [...selectedPhotos, ...newPhotos];
+    setSelectedPhotos(updatedPhotos);
     setError(null);
-    // For test images with local paths, use the local path for preview
-    // Otherwise, use blob URL for regular uploads
-    setPreviewUrl(localPath || URL.createObjectURL(file));
 
-    let uploadedImageUrl: string | null = null;
+    // Reset input values to allow selecting the same file again
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
+    if (albumInputRef.current) albumInputRef.current.value = "";
 
-    // Upload to Supabase Storage (skip for test images)
-    if (!skipUpload) {
-      setIsUploading(true);
-      try {
-        const supabase = createClient();
+    // If onRecipeParsed is not provided, upload immediately (for optional recipe image)
+    if (!onRecipeParsed && updatedPhotos.length > 0) {
+      await uploadSingleImage(updatedPhotos[0]);
+    }
+  };
 
-        // Generate unique filename
-        const fileExt = file.name.split(".").pop();
+  const uploadSingleImage = async (photo: SelectedPhoto) => {
+    setError(null);
+    setIsUploading(true);
+
+    try {
+      const supabase = createClient();
+      const fileExt = photo.file.name.split(".").pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `recipe-images/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("recipe-images")
+        .upload(filePath, photo.file);
+
+      if (uploadError) throw uploadError;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("recipe-images").getPublicUrl(filePath);
+
+      onImageUploaded(publicUrl);
+      // Clear selection after upload
+      setSelectedPhotos([]);
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      setError("Failed to upload image");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleCameraSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFileSelect(e.target.files);
+  };
+
+  const handleAlbumSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFileSelect(e.target.files);
+  };
+
+  const removePhoto = (id: string) => {
+    setSelectedPhotos((prev) => {
+      const photo = prev.find((p) => p.id === id);
+      if (photo) {
+        URL.revokeObjectURL(photo.preview);
+      }
+      return prev.filter((p) => p.id !== id);
+    });
+    setError(null);
+  };
+
+  const handleSubmit = async () => {
+    if (selectedPhotos.length === 0) return;
+    if (!onRecipeParsed) return;
+
+    setError(null);
+    setIsUploading(true);
+    setIsParsing(true);
+
+    try {
+      const supabase = createClient();
+      const uploadedUrls: string[] = [];
+      const formData = new FormData();
+
+      // Upload all photos to Supabase
+      for (const photo of selectedPhotos) {
+        const fileExt = photo.file.name.split(".").pop();
         const fileName = `${Math.random()}.${fileExt}`;
         const filePath = `recipe-images/${fileName}`;
 
-        // Upload file
         const { error: uploadError } = await supabase.storage
           .from("recipe-images")
-          .upload(filePath, file);
+          .upload(filePath, photo.file);
 
         if (uploadError) throw uploadError;
 
-        // Get public URL
         const {
           data: { publicUrl },
         } = supabase.storage.from("recipe-images").getPublicUrl(filePath);
 
-        uploadedImageUrl = publicUrl;
-        onImageUploaded(publicUrl);
-      } catch (err) {
-        console.error("Error uploading image:", err);
-        setError("Failed to upload image");
-        setPreviewUrl(null);
-        setIsUploading(false);
-        return;
-      } finally {
-        setIsUploading(false);
+        uploadedUrls.push(publicUrl);
+        formData.append("image", photo.file);
       }
-    } else if (localPath) {
-      // For test images, use the local path and notify parent
-      uploadedImageUrl = localPath;
-      onImageUploaded(localPath);
-    }
 
-    // If onRecipeParsed is provided, try to parse the recipe from the image
-    // For test images, we can parse directly without requiring an uploaded URL
-    if (onRecipeParsed) {
-      setIsParsing(true);
-      try {
-        const formData = new FormData();
-        formData.append("image", file);
+      // Use first uploaded image URL for the recipe
+      const primaryImageUrl = uploadedUrls[0];
+      onImageUploaded(primaryImageUrl);
 
-        const response = await fetch("/api/parse-recipe-image", {
-          method: "POST",
-          body: formData,
-        });
+      // Parse all images
+      const response = await fetch("/api/parse-recipe-image", {
+        method: "POST",
+        body: formData,
+      });
 
-        if (!response.ok) {
-          throw new Error("Failed to parse recipe from image");
-        }
-
-        const recipeData = await response.json();
-        // Include the image URL in the parsed recipe data (local path for test images, uploaded URL for regular uploads)
-        onRecipeParsed({
-          ...recipeData,
-          image_url: uploadedImageUrl,
-        });
-      } catch (err) {
-        console.error("Error parsing recipe from image:", err);
-        setError(
-          skipUpload
-            ? "Failed to parse recipe from image"
-            : "Failed to parse recipe from image. Image uploaded successfully."
-        );
-      } finally {
-        setIsParsing(false);
+      if (!response.ok) {
+        throw new Error("Failed to parse recipe from images");
       }
-    }
-  };
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    await processImageFile(file);
-  };
-
-  const handleTestImageSelect = async (imageName: string) => {
-    if (!isDevMode) return;
-
-    try {
-      // Fetch the test image
-      const response = await fetch(`/test_recipes/${imageName}`);
-      if (!response.ok) throw new Error("Failed to fetch test image");
-
-      const blob = await response.blob();
-
-      // Convert blob to File object
-      const file = new File([blob], imageName, { type: blob.type });
-
-      // Local path for test images (files in public/test_recipes/ are served at /test_recipes/)
-      const localPath = `/test_recipes/${imageName}`;
-
-      // Process it directly (skip Supabase upload, send directly to API, use local path)
-      await processImageFile(file, true, localPath);
+      const recipeData = await response.json();
+      onRecipeParsed({
+        ...recipeData,
+        image_url: primaryImageUrl,
+      });
     } catch (err) {
-      console.error("Error loading test image:", err);
-      setError("Failed to load test image");
+      console.error("Error processing images:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to process images. Please try again."
+      );
+    } finally {
+      setIsUploading(false);
+      setIsParsing(false);
     }
   };
+
+  // Cleanup preview URLs on unmount
+  useEffect(() => {
+    return () => {
+      selectedPhotos.forEach((photo) => {
+        URL.revokeObjectURL(photo.preview);
+      });
+    };
+  }, [selectedPhotos]);
 
   return (
-    <div className="space-y-3">
-      {previewUrl && (
-        <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
-          <img
-            src={previewUrl}
-            alt="Preview"
-            className="h-full w-full object-cover"
-          />
-        </div>
-      )}
-
+    <div className="space-y-4">
       {error && (
         <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
           {error}
         </div>
       )}
 
-      <div className="space-y-3">
-        {/* {isDevMode && (
-          <div className="rounded-lg border-2 border-dashed border-primary/50 bg-primary/5 p-3">
-            <label className="mb-2 block text-xs font-medium text-primary">
-              🧪 Dev Mode: Test Images
-            </label>
-            <select
-              onChange={(e) => {
-                if (e.target.value) {
-                  handleTestImageSelect(e.target.value);
-                  e.target.value = ""; // Reset select
-                }
-              }}
-              disabled={isUploading || isParsing}
-              className="w-full rounded-lg border border-primary/50 bg-card px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
-            >
-              <option value="">Select a test image...</option>
-              {TEST_IMAGES.map((img) => (
-                <option key={img.name} value={img.name}>
-                  {img.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        )} */}
-
-        <div className="flex items-center gap-3">
-          <span
-            className={`relative z-0 inline-flex before:pointer-events-none before:absolute before:inset-0 before:z-0 before:translate-x-1.5 before:translate-y-1.5 before:bg-black/35 before:content-[''] ${
-              isUploading || isParsing ? "opacity-60" : ""
-            }`}
-          >
-            <label
-              className={`relative z-10 inline-flex items-center justify-center gap-2 rounded-none border-2 border-black bg-white px-8 py-3 text-base font-semibold text-black transition-transform active:translate-x-1 active:translate-y-1 ${
-                isUploading || isParsing ? "cursor-not-allowed" : "cursor-pointer"
-              }`}
-            >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-            {onRecipeParsed ? "Take Photo & Parse Recipe" : "Take Photo"}
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleFileSelect}
-              className="hidden"
-              disabled={isUploading || isParsing}
-            />
-            </label>
-          </span>
-
-          {(isUploading || isParsing) && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <svg
-                className="h-5 w-5 animate-spin"
-                fill="none"
-                viewBox="0 0 24 24"
+      {/* Photo Selection Buttons */}
+      {selectedPhotos.length < MAX_PHOTOS &&
+        (!onRecipeParsed || selectedPhotos.length === 0) && (
+          <div className="flex items-center gap-3">
+            <span className="relative z-0 inline-flex before:pointer-events-none before:absolute before:inset-0 before:z-0 before:translate-x-1.5 before:translate-y-1.5 before:bg-black/35 before:content-['']">
+              <label
+                className={`relative z-10 inline-flex items-center justify-center gap-2 rounded-none border-2 border-black bg-white px-6 py-3 text-base font-semibold text-black transition-transform active:translate-x-1 active:translate-y-1 ${
+                  isUploading || isParsing
+                    ? "cursor-not-allowed opacity-60"
+                    : "cursor-pointer"
+                }`}
               >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
                   stroke="currentColor"
-                  strokeWidth="4"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                Take Photo
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleCameraSelect}
+                  className="hidden"
+                  disabled={isUploading || isParsing}
                 />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              </label>
+            </span>
+
+            <span className="relative z-0 inline-flex before:pointer-events-none before:absolute before:inset-0 before:z-0 before:translate-x-1.5 before:translate-y-1.5 before:bg-black/35 before:content-['']">
+              <label
+                className={`relative z-10 inline-flex items-center justify-center gap-2 rounded-none border-2 border-black bg-white px-6 py-3 text-base font-semibold text-black transition-transform active:translate-x-1 active:translate-y-1 ${
+                  isUploading || isParsing
+                    ? "cursor-not-allowed opacity-60"
+                    : "cursor-pointer"
+                }`}
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                Choose from Album
+                <input
+                  ref={albumInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleAlbumSelect}
+                  className="hidden"
+                  disabled={isUploading || isParsing}
                 />
-              </svg>
-              {isParsing ? "Parsing recipe..." : "Uploading..."}
-            </div>
+              </label>
+            </span>
+          </div>
+        )}
+
+      {/* Selected Photos Preview Grid */}
+      {selectedPhotos.length > 0 && (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {selectedPhotos.map((photo) => (
+              <div
+                key={photo.id}
+                className="relative aspect-square overflow-hidden rounded-lg bg-muted"
+              >
+                <img
+                  src={photo.preview}
+                  alt="Preview"
+                  className="h-full w-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => removePhoto(photo.id)}
+                  disabled={isUploading || isParsing}
+                  className="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-white transition-opacity hover:opacity-80 disabled:opacity-50"
+                  aria-label="Remove photo"
+                >
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {selectedPhotos.length < MAX_PHOTOS && (
+            <p className="text-xs text-muted-foreground">
+              {selectedPhotos.length} of {MAX_PHOTOS} photos selected
+            </p>
           )}
         </div>
-      </div>
+      )}
+
+      {/* Submit Button */}
+      {selectedPhotos.length > 0 && onRecipeParsed && (
+        <div className="flex items-center gap-3">
+          <span className="relative z-0 inline-flex before:pointer-events-none before:absolute before:inset-0 before:z-0 before:translate-x-1.5 before:translate-y-1.5 before:bg-black/35 before:content-['']">
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isUploading || isParsing}
+              className="relative z-10 inline-flex items-center justify-center gap-2 rounded-none border-2 border-black bg-white px-8 py-3 text-base font-semibold text-black transition-transform active:translate-x-1 active:translate-y-1 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isParsing ? (
+                <>
+                  <svg
+                    className="h-5 w-5 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Parsing Recipe...
+                </>
+              ) : isUploading ? (
+                <>
+                  <svg
+                    className="h-5 w-5 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  Submit for Parsing
+                </>
+              )}
+            </button>
+          </span>
+        </div>
+      )}
     </div>
   );
 }
