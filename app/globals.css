@@ -53,6 +53,15 @@
   --shadow-2xl: 4px 4px 0px 0px oklch(0 0 0 / 2.5);
 }
 
+/* iOS safe-area insets for installed PWAs */
+body {
+  min-height: 100vh;
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+}
+
 .dark {
   --background: oklch(0 0 0);
   --foreground: oklch(1 0 0);

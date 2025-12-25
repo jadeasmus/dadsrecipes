@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
+import { z } from "zod";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -27,18 +27,15 @@ export async function POST(request: NextRequest) {
   try {
     const { text } = await request.json();
 
-    if (!text || typeof text !== 'string') {
-      return NextResponse.json(
-        { error: 'No text provided' },
-        { status: 400 }
-      );
+    if (!text || typeof text !== "string") {
+      return NextResponse.json({ error: "No text provided" }, { status: 400 });
     }
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4',
+      model: "gpt-4",
       messages: [
         {
-          role: 'system',
+          role: "system",
           content: `You are a recipe extraction assistant. Extract recipe information from the provided text and return it as JSON. 
 The JSON should have the following structure:
 {
@@ -56,18 +53,18 @@ The JSON should have the following structure:
 Parse the text carefully and extract all recipe information. For time_estimation, convert to minutes if needed.`,
         },
         {
-          role: 'user',
+          role: "user",
           content: text,
         },
       ],
-      response_format: { type: 'json_object' },
+      response_format: { type: "json_object" },
       temperature: 0.3,
     });
 
     const content = response.choices[0]?.message?.content;
     if (!content) {
       return NextResponse.json(
-        { error: 'No response from AI' },
+        { error: "No response from AI" },
         { status: 500 }
       );
     }
@@ -77,17 +74,16 @@ Parse the text carefully and extract all recipe information. For time_estimation
 
     return NextResponse.json(validated);
   } catch (error) {
-    console.error('Recipe parsing error:', error);
+    console.error("Recipe parsing error:", error);
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid recipe format', details: error.errors },
+        { error: "Invalid recipe format", details: error },
         { status: 400 }
       );
     }
     return NextResponse.json(
-      { error: 'Failed to parse recipe' },
+      { error: "Failed to parse recipe" },
       { status: 500 }
     );
   }
 }
-
