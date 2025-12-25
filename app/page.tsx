@@ -59,32 +59,30 @@ export default async function Home() {
           id="recipes"
           className="mb-10 flex flex-col gap-3 sm:mb-12 sm:flex-row sm:items-center sm:justify-between"
         >
-          {/* <h1 className="text-2xl font-bold sm:text-3xl">Recipes</h1> */}
-          <Link
-            href="/recipe/new"
-            className="inline-flex justify-center items-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-transform hover:scale-105 sm:px-8 sm:py-4 sm:text-lg "
-            style={{
-              boxShadow: "4px 4px 0px 0px rgba(0, 0, 0, 1)",
-            }}
-          >
-            <span className="text-xl">Add a Recipe</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-circle-plus-icon lucide-circle-plus"
+          <span className="relative z-0 inline-flex shrink-0 before:pointer-events-none before:absolute before:inset-0 before:z-0 before:translate-x-1.5 before:translate-y-1.5 before:bg-black/80 before:content-[''] before:rounded-lg">
+            <Link
+              href="/recipe/new"
+              className="relative w-full z-10 inline-flex justify-center items-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-transform active:translate-x-1 active:translate-y-1 hover:scale-105 sm:px-8 sm:py-4 sm:text-lg shrink-0"
             >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M8 12h8" />
-              <path d="M12 8v8" />
-            </svg>
-          </Link>
+              <span className="text-xl">Add a Recipe</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-circle-plus-icon lucide-circle-plus"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M8 12h8" />
+                <path d="M12 8v8" />
+              </svg>
+            </Link>
+          </span>
         </div>
         <RecipeGrid recipes={(recipes as Recipe[]) || []} />
       </main>

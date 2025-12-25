@@ -50,15 +50,14 @@ export function RecipePageClient({ recipe }: RecipePageClientProps) {
           <RecipeHeader recipe={recipe} recipeUrl={`/recipe/${recipe.id}`} />
           <IngredientsList ingredients={recipe.ingredients} />
           <div className="mb-8">
-            <button
-              onClick={() => setIsLetsCookMode(true)}
-              className="inline-flex justify-center items-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-transform hover:scale-105 sm:px-8 sm:py-4 sm:text-lg"
-              style={{
-                boxShadow: "4px 4px 0px 0px rgba(0, 0, 0, 1)",
-              }}
-            >
-              <span className="text-xl">Let's Cook!</span>
-            </button>
+            <span className="relative z-0 inline-flex shrink-0 before:pointer-events-none before:absolute before:inset-0 before:z-0 before:translate-x-1.5 before:translate-y-1.5 before:bg-black/80 before:content-[''] before:rounded-lg">
+              <button
+                onClick={() => setIsLetsCookMode(true)}
+                className="relative z-10 inline-flex justify-center items-center gap-2 rounded-lg bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-transform active:translate-x-1 active:translate-y-1 hover:scale-105 sm:px-8 sm:py-4 sm:text-lg shrink-0"
+              >
+                <span className="text-xl">Let's Cook!</span>
+              </button>
+            </span>
           </div>
           <InstructionsView instructions={recipe.instructions} />
         </div>
