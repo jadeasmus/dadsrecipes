@@ -39,14 +39,32 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           </div>
         )}
       </div>
-      <div className="p-4">
-        <h3 className="text-lg font-semibold">
-          {recipe.name}
-        </h3>
+      <div className="relative flex flex-col p-4 w-full">
+        <h3 className="text-lg font-semibold">{recipe.name}</h3>
         {recipe.time_estimation && (
           <p className="mt-1 text-sm text-muted-foreground">
             {recipe.time_estimation} min
           </p>
+        )}
+        {(recipe.cuisine_type || recipe.main_ingredient || recipe.servings) && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {recipe.cuisine_type && (
+              <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                {recipe.cuisine_type}
+              </span>
+            )}
+            {recipe.main_ingredient && (
+              <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                {recipe.main_ingredient}
+              </span>
+            )}
+            {recipe.servings && (
+              <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                {recipe.servings}{" "}
+                {recipe.servings === 1 ? "serving" : "servings"}
+              </span>
+            )}
+          </div>
         )}
       </div>
     </Link>

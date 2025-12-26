@@ -51,6 +51,8 @@
   --shadow-xl: 4px 4px 0px 0px oklch(0 0 0 / 1),
     4px 8px 10px -1px oklch(0 0 0 / 1);
   --shadow-2xl: 4px 4px 0px 0px oklch(0 0 0 / 2.5);
+
+  -webkit-text-size-adjust: 100%;
 }
 
 /* iOS safe-area insets for installed PWAs */
